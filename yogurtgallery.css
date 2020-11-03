@@ -1,0 +1,105 @@
+#yogurtgallery {
+    /* background: aqua; */
+    display: inline-flex;
+    flex-direction: column;
+    min-width: 100%;
+}
+
+#yogurtgallery-gallery,
+#yogurtgallery-navigation {
+    margin-top: 8px;
+}
+
+#yogurtgallery-header {
+    text-align: right;
+}
+
+#yogurtgallery-gallery {
+    /* background: tomato; */
+    display: inline-grid;
+    grid-auto-rows: 1fr; /* Makes all rows the same height */
+    min-width: 100%;
+    user-select: none;
+}
+
+.yogurtgallery-gallery-item:nth-child(1) {
+    grid-column: 1 / 1;
+    grid-row: 1 / 1;
+    padding-bottom: 100%;
+    width: 0;
+}
+
+.yogurtgallery-gallery-item:nth-child(2) {
+    grid-column: 1 / 1;
+    grid-row: 1 / 1;
+}
+
+.yogurtgallery-gallery-item:not(:nth-child(1)) {
+    background: #ffffff;
+    border: 1px solid black;
+    display: block;
+    padding: 1px;
+}
+
+.yogurtgallery-gallery-item:not(:nth-child(1)):hover {
+    border-image-slice: 1;
+    border-image-source: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #b8fd33 50%, #fec837 75%, #fd1892 100%);
+}
+
+.yogurtgallery-gallery-item span {
+    background-position: center center;
+    background-size: cover;
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.yogurtgallery-gallery-item:hover span {
+    opacity: 0.5
+}
+
+#yogurtgallery-navigation {
+    display: flex;
+    justify-content: space-between;
+}
+
+#yogurtgallery-navigation span,
+#yogurtgallery-navigation a {
+    margin: 2px;
+}
+
+#yogurtgallery-popup {
+    background: #e0e0e0;
+    border-radius: 5px;
+    box-shadow: 0 0 0 1px #70758c;
+    display: none;
+    left: 50%;
+    padding: 8px;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+#yogurtgallery-popup div:nth-child(1) {
+    background: #5f5f66;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}
+
+#yogurtgallery-popup div:nth-child(2) {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+}
+
+#yogurtgallery-popup img {
+    max-height: 90vh;
+    max-width: 90vw;
+}
+
+#yogurtgallery-popup span {
+    cursor: default;
+    margin-right: 64px;
+}
