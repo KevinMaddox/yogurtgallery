@@ -1,8 +1,7 @@
 #yogurtgallery {
     /* background: aqua; */
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
-    min-width: 100%;
 }
 
 #yogurtgallery-gallery,

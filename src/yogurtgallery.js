@@ -34,7 +34,7 @@ class YogurtGallery {
             'imagesPath':          ['string',  ''    ],
             'thumbnailsPath':      ['string',  ''    ],
             'dbPath':              ['string',  ''    ],
-            'layoutType':          ['string',  'flow'],
+            'layoutType':          ['string',  'fluid'],
             'itemsPerPage':        ['number',  30    ],
             'itemsPerRow':         ['number',  6     ],
             'itemSizeRatio':       ['string',  '1:1' ],
@@ -75,13 +75,14 @@ class YogurtGallery {
             // Validate specific options.
             switch (key) {
                 case 'layoutType':
-                    if (options[key] !== 'flow' && options[key] !== 'scale') {
+                    if (options[key] !== 'fluid' && options[key] !== 'fixed') {
                         this._report(
                             'Warning',
                             `Invalid value for option ${key}. `
-                          + 'Value must be either "flow" or "scale".'
+                          + 'Value must be either "fluid" or "fixed".'
                           + `Defaulting value to ${validOptions[key][1]}.`
                         );
+                        options[key] = validOptions[key][1];
                         break;
                     }
                 
@@ -117,13 +118,15 @@ class YogurtGallery {
           + '</p>'
           + '<div id="yogurtgallery-gallery"></div>'
           + '<div id="yogurtgallery-navigation"></div>'
-          + '<div id="yogurtgallery-popup">'
+        ;
+        
+        container.innerHTML = containerHTML;
+        document.body.innerHTML += 
+            '<div id="yogurtgallery-popup">'
           +     '<div><img src=""></div>'
           +     '<div><span></span><a href="#">[View Full Size]</a></div>'
           + '</div>'
         ;
-        
-        container.innerHTML = containerHTML;
         
         this._elems.header = document.getElementById(
             'yogurtgallery-header'
@@ -291,22 +294,22 @@ class YogurtGallery {
                 h: options.itemSizeRatio.split(':')[1]
             };
             
-            if (options.layoutType === 'scale') {
+            if (options.layoutType === 'fixed') {
                 this._elems.gallery.style.gridTemplateColumns =
                     'repeat('
                   + Math.min(options.itemsPerRow, maxEntriesPerPage)
                   + ', minmax(0, 1fr))'
                 ;
                 
-                this._elems.gallery.style.gridTemplateRows =
-                    'repeat(auto-fill, minmax(0, 1fr))'
-                ;
+                // this._elems.gallery.style.gridTemplateRows =
+                    // 'repeat(auto-fill, minmax(0, 1fr))'
+                // ;
                 
                 this._elems.gallery.getElementsByClassName(
                     'yogurtgallery-gallery-item'
                 )[0].style.paddingBottom = ((ratio.h / ratio.w) * 100) + '%';
             }
-            else if (options.layoutType === 'flow') {
+            else if (options.layoutType === 'fluid') {
                 let baseSize = options.magnification * 8;
                 
                 if (ratio.w > ratio.h) {
@@ -331,7 +334,6 @@ class YogurtGallery {
                         'repeat(auto-fill, minmax('
                       + baseSize + 'rem, 1fr))'
                     ;
-                    
                 }
                 else {
                     // Size: Proportional (squares)
