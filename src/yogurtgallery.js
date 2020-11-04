@@ -201,7 +201,7 @@ class YogurtGallery {
                     '<a'
                   + ' class="yogurtgallery-gallery-item"'
                   + ` href="${options.imagesPath}${fileNames[i]}">`
-                  + '<span style="background-image:url(\''
+                  + '<span><span style="background-image:url(\''
                   + options.thumbnailsPath
                 ;
                 
@@ -210,7 +210,7 @@ class YogurtGallery {
                 else
                     galleryHTML += fileNames[i];
                 
-                galleryHTML += '\')"></span></a>';
+                galleryHTML += '\')"></span></span></a>';
             }
             
             // - Build page navigation HTML. -----------------------------------
