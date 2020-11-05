@@ -1,12 +1,20 @@
 <?php
 
+/**
+ *
+ * YogurtGallery Image Database Generator
+ *
+ * Wally Chantek, 2020
+ * https://github.com/wallychantek/yogurtgallery
+ *
+**/
+
 // - Initialization. -----------------------------------------------------------
-echo PHP_EOL;
 echo 'Yogurt Gallery - Image Database Generator' . PHP_EOL;
 echo 'https://github.com/WallyChantek/yogurtgallery' . PHP_EOL . PHP_EOL;
 
 // - Validate configuration options. -------------------------------------------
-$cfg = require_once('config.php');
+$cfg = require_once('config-generate-db.php');
 
 if (!$cfg)
     exit('Could not locate configuration file.');
@@ -18,24 +26,27 @@ else if (!is_array($cfg)) {
 }
 
 $validOptions = [
-    'imageDirectoryRootPath' => ['string' , ''                           ],
-    'imageDirectoryPaths'    => ['array'  , []                           ],
-    'databaseOutputFilename' => ['string' , 'db.json'                    ],
-    'filetypes'              => ['array'  , ['jpg', 'jpeg', 'png', 'gif']],
-    'sortingMethod'          => ['string' , 'ALPHANUMERIC'               ],
-    'reverseSorting'         => ['boolean', false                        ]
+    'imageDirectoryRootPath' => ['string' , ''                   ],
+    'imageDirectoryPaths'    => ['array'  , []                   ],
+    'databaseOutputFileName' => ['string' , 'db.json'            ],
+    'fileFormats'            => ['array'  , ['jpg', 'png', 'gif']],
+    'sortingMethod'          => ['string' , 'ALPHANUMERIC'       ],
+    'reverseSorting'         => ['boolean', false                ]
 ];
+
+$acceptedImageFormats = ['jpg', 'png', 'gif', 'bmp', 'webp'];
 
 // Set default values for unspecified options.
 foreach ($validOptions as $key => $val) {
     if (!array_key_exists($key, $cfg)) {
-        $cfg[$key] = $validOptions[$key][1];
         echo "Missing parameter {$key}. ";
         if (!is_array($validOptions[$key][1]))
             echo "Defaulting value to {$validOptions[$key][1]}.";
         else
             echo "Defaulting value to [].";
         echo PHP_EOL . PHP_EOL;
+        
+        $cfg[$key] = $validOptions[$key][1];
     }
 }
 
@@ -59,7 +70,7 @@ foreach ($cfg as $key => $val) {
         case 'imageDirectoryRootPath':
             if (strlen($cfg[$key]) === 0) {
                 exit(
-                    'imageDirectoryRootPath cannot be an empty string. '
+                    "{$key} cannot be an empty string. "
                   . 'Did you forget to specify this option in the config?'
                 );
             }
@@ -70,7 +81,7 @@ foreach ($cfg as $key => $val) {
         case 'imageDirectoryPaths' :
             if (count($cfg[$key]) === 0) {
                 exit(
-                    'imageDirectoryPaths cannot be an empty array. '
+                    "{$key} cannot be an empty array. "
                   . 'Did you forget to specify this option in the config?'
                 );
             }
@@ -79,7 +90,7 @@ foreach ($cfg as $key => $val) {
                 // Ensure path isn't an empty string.
                 if (strlen($cfg[$key][$i]) === 0) {
                     exit(
-                        'imageDirectoryPaths contains an empty string entry. '
+                        "{$key} contains an empty string entry. "
                       . 'This is not allowed.'
                     );
                 }
@@ -97,35 +108,52 @@ foreach ($cfg as $key => $val) {
             }
             
             break;
-        case 'databaseOutputFilename':
+        case 'databaseOutputFileName':
             // Ensure path ends with ".json".
-            if (substr($cfg[$key], -5) !== '.json')
+            if (substr($cfg[$key], -5) !== '.json') {
+                echo "{$key} does not end in extension .json. ";
+                echo 'This extension will be appended.';
+                echo PHP_EOL . PHP_EOL;
+                
                 $cfg[$key] .= '.json';
+            }
             
             break;
-        case 'filetypes':
+        case 'fileFormats':
             for ($i = 0; $i < count($cfg[$key]); $i++) {
                 if (gettype($cfg[$key][$i]) !== 'string') {
                     exit(
                         'Please ensure all values contained in option'
-                      . 'filetypes are strings.'
+                      . "{$key} are strings."
+                    );
+                }
+                else if (!in_array($cfg[$key][$i], $acceptedImageFormats)) {
+                    exit(
+                        "{$cfg[$key][$i]} is not an accepted image format for "
+                      . "{$key}." . PHP_EOL
+                      . 'Accepted formats are:' . PHP_EOL
+                      . '[' . implode(', ', $acceptedImageFormats) . ']'
                     );
                 }
             }
+            
+            // Search for both JPEG extensions if only one was specified.
+            if (in_array('jpg', $cfg[$key]) && !in_array('jpeg', $cfg[$key]))
+                array_push($cfg[$key], 'jpeg');
+            if (in_array('jpeg', $cfg[$key]) && !in_array('jpg', $cfg[$key]))
+                array_push($cfg[$key], 'jpg');
             
             break;
         case 'sortingMethod':
             if (!in_array($cfg[$key], array(
                     'ALPHANUMERIC', 'DATE_MODIFIED', 'DATE_CREATED', 'NONE'
                 ), true)) {
-                exit("{$cfg[$key]} is not a valid value for sortingMethod.");
+                exit("{$cfg[$key]} is not a valid value for {$key}.");
             }
                 
             break;
     }
 }
-
-
 
 // - Retrieve and sort files to be catalogued in database. ---------------------
 // Get list of target folders.
@@ -135,17 +163,17 @@ $folders = $cfg['imageDirectoryPaths'];
 // Get complete list of files within folders.
 // We'll need to store the parent folder and the file name as split-up arrays.
 // This is so we can do a global sort, but still maintain the original folder.
-$filePaths = [];
+$fileData = [];
 foreach($folders as $folder)
 {
     $files = glob($root . $folder . '*');
     foreach ($files as $f)
     {
-        if (!in_array(pathinfo($f, PATHINFO_EXTENSION), $cfg['filetypes']))
+        if (!in_array(pathinfo($f, PATHINFO_EXTENSION), $cfg['fileFormats']))
             continue;
         
         
-        array_push($filePaths, [
+        array_push($fileData, [
             dirname(str_replace($root, '', $f)) . '/',
             basename($f)
         ]);
@@ -155,13 +183,13 @@ foreach($folders as $folder)
 // Sort files.
 switch ($cfg['sortingMethod']) {
     case 'ALPHANUMERIC':
-        usort($filePaths, function($a, $b) {
+        usort($fileData, function($a, $b) {
             return ($a[1] < $b[1]) ? -1 : 1;
         });
         
         break;
     case 'DATE_MODIFIED':
-        usort($filePaths, function($a, $b) use ($root) {
+        usort($fileData, function($a, $b) use ($root) {
             $t1 = filemtime($root . $a[0] . $a[1]);
             $t2 = filemtime($root . $b[0] . $b[1]);
             
@@ -170,7 +198,7 @@ switch ($cfg['sortingMethod']) {
         
         break;
     case 'DATE_CREATED':
-        usort($filePaths, function($a, $b) use ($root) {
+        usort($fileData, function($a, $b) use ($root) {
             $t1 = filectime($root . $a[0] . $a[1]);
             $t2 = filectime($root . $b[0] . $b[1]);
             
@@ -182,27 +210,41 @@ switch ($cfg['sortingMethod']) {
 
 // Rever order of sorted files if specified.
 if ($cfg['reverseSorting']) {
-    usort($filePaths, function($a, $b) {
+    usort($fileData, function($a, $b) {
         return $a <= $b;
     });
 }
 
 // Store as single folder/file strings.
-$fileNames = [];
-for ($i = 0; $i < count($filePaths); $i++)
-    array_push($fileNames, $filePaths[$i][0] . $filePaths[$i][1]);
+$filePaths = [];
+for ($i = 0; $i < count($fileData); $i++)
+    array_push($filePaths, $fileData[$i][0] . $fileData[$i][1]);
 
 // Save image path list as JSON file.
 file_put_contents(
-    $root . $cfg['databaseOutputFilename'], 
-    json_encode($fileNames, JSON_PRETTY_PRINT)
+    $root . $cfg['databaseOutputFileName'], 
+    json_encode($filePaths, JSON_PRETTY_PRINT)
 );
 
+echo 'Database generation complete.';
 
-function sanitizePath($path) {
-    // Converted slashes and force trailing slash.
+
+// - Functions -----------------------------------------------------------------
+/**
+ *
+ * Fixes slashes in paths.
+ *
+ * @param {string}  $path              - The path to be sanitized.
+ * @param {boolean} forceTrailingSlash - Append a trailing slash if absent.
+ *
+**/
+function sanitizePath($path, $isFile = false) {
+    // Convert slashes.
     $path = str_replace('\\', '/', $path);
-    $path = (substr($path, -1) !== '/' ? $path . '/' : $path);
+    
+    // Force trailing slash if target is a directory.
+    if (!$isFile)
+        $path = (substr($path, -1) !== '/' ? $path . '/' : $path);
     
     return $path;
 }

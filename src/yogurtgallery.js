@@ -1,5 +1,3 @@
-// TODO: Option to convert GIF thumbnails to PNG or whatever
-
 /**
  * __ __ ___ ___  _ _ ___  _____ ___ ___ _   _   ___ ___ __ __
  * \ | /|   |  _|| | | _ ||_   _|  _| _ | | | | | __| _ |\ | /
@@ -31,17 +29,16 @@ class YogurtGallery {
         }
         
         let validOptions = {
-            'imagesPath':          ['string',  ''    ],
-            'thumbnailsPath':      ['string',  ''    ],
-            'dbPath':              ['string',  ''    ],
-            'layoutType':          ['string',  'fluid'],
-            'itemsPerPage':        ['number',  30    ],
-            'itemsPerRow':         ['number',  6     ],
-            'itemSizeRatio':       ['string',  '1:1' ],
-            'itemGap':             ['number',  0     ],
-            'magnification':       ['number',  1     ],
-            'maxPaginationLinks':  ['number',  7     ],
-            'gifThumbnailsArePng': ['boolean', true  ]
+            'rootPath':               ['string',  ''     ],
+            'databaseFilename':       ['string',  ''     ],
+            'thumbnailDirectoryName': ['string',  ''     ],
+            'layoutType':             ['string',  'fluid'],
+            'itemsPerPage':           ['number',  30     ],
+            'itemsPerRow':            ['number',  6      ],
+            'itemSizeRatio':          ['string',  '1:1'  ],
+            'itemGap':                ['number',  0      ],
+            'magnification':          ['number',  1      ],
+            'maxPaginationLinks':     ['number',  7      ]
         };
         
         // Perform validation.
@@ -64,16 +61,14 @@ class YogurtGallery {
                 options[key] = validOptions[key][1];
             }
             
-            // Fix paths.
-            if (key.includes('Path')) {
-                options[key] = options[key].replace(/\\/g, "/");
-                
-                if (options[key][options[key].length - 1] !== '/')
-                    options[key] += '/'
-            }
-            
             // Validate specific options.
             switch (key) {
+                case 'rootPath':
+                    options[key] = this._sanitizePath(options[key], true);
+                    break;
+                case 'thumbnailDirectoryName':
+                    options[key] = this._sanitizePath(options[key], true);
+                    break;
                 case 'layoutType':
                     if (options[key] !== 'fluid' && options[key] !== 'fixed') {
                         this._report(
@@ -123,8 +118,13 @@ class YogurtGallery {
         container.innerHTML = containerHTML;
         document.body.innerHTML += 
             '<div id="yogurtgallery-popup">'
-          +     '<div><img src=""></div>'
-          +     '<div><span></span><a href="#">[View Full Size]</a></div>'
+          +     '<div><img id="yogurtgallery-popup-image" src=""></div>'
+          +     '<div>'
+          +         '<span id="yogurtgallery-popup-name"></span>'
+          +         '<a id="yogurtgallery-popup-link" href="#">'
+          +             '[View Full Size]'
+          +         '</a>'
+          +     '</div>'
           + '</div>'
         ;
         
@@ -147,21 +147,21 @@ class YogurtGallery {
         this._elems.popupImageContainer =
             this._elems.popup.getElementsByTagName('div')[0];
         
-        this._elems.popupImage = this._elems.popup.getElementsByTagName(
-            'img'
-        )[0];
+        this._elems.popupImage = document.getElementById(
+            'yogurtgallery-popup-image'
+        );
         
-        this._elems.popupFilename = this._elems.popup.getElementsByTagName(
-            'span'
-        )[0];
+        this._elems.popupFilename = document.getElementById(
+            'yogurtgallery-popup-name'
+        );
         
-        this._elems.popupLink = this._elems.popup.getElementsByTagName(
-            'a'
-        )[0];
+        this._elems.popupLink = document.getElementById(
+            'yogurtgallery-popup-link'
+        );
         
         // - Load database and populate page with data. ------------------------
         let request = new XMLHttpRequest();
-        request.open('GET', options.dbPath);
+        request.open('GET', options.rootPath + options.databaseFilename);
         request.responseType = 'json';
         request.onload = function() {
             if (request.readyState !== 4 || request.status !== 200) {
@@ -173,7 +173,7 @@ class YogurtGallery {
             if (fileNames.length <= 0)
                 return;
             
-            let pageNum = this.grabGET('page');
+            let pageNum = this._grabGET('page');
             pageNum = (!pageNum || isNaN(pageNum)) ? 1 : parseInt(pageNum);
             
             let maxEntriesPerPage = Math.min(
@@ -191,7 +191,7 @@ class YogurtGallery {
                 pageNum = totalPageCount;
             
             // - Build gallery HTML. -------------------------------------------
-            let galleryHTML = '<a class="yogurtgallery-gallery-item"></a>';
+            let galleryHTML = '<a class="yogurtgallery-item"></a>';
             for (
                 var i = ((pageNum - 1) * maxEntriesPerPage);
                 i < Math.min((maxEntriesPerPage * pageNum), fileNames.length);
@@ -199,18 +199,15 @@ class YogurtGallery {
             ) {
                 galleryHTML +=
                     '<a'
-                  + ' class="yogurtgallery-gallery-item"'
-                  + ` href="${options.imagesPath}${fileNames[i]}">`
-                  + '<span><span style="background-image:url(\''
-                  + options.thumbnailsPath
+                  + ' class="yogurtgallery-item"'
+                  + ` href="${options.rootPath}${fileNames[i]}">`
+                  + '<span class="yogurtgallery-item-thumbnail-container">'
+                  + '<span class="yogurtgallery-item-thumbnail" '
+                  + 'style="background-image:url(\''
+                  + options.rootPath + options.thumbnailDirectoryName
+                  + fileNames[i].replace(/.gif|.bmp/g, '.png')
+                  + '\')"></span></span></a>'
                 ;
-                
-                if (options.gifThumbnailsArePng)
-                    galleryHTML += fileNames[i].replace('.gif', '.png');
-                else
-                    galleryHTML += fileNames[i];
-                
-                galleryHTML += '\')"></span></span></a>';
             }
             
             // - Build page navigation HTML. -----------------------------------
@@ -257,14 +254,14 @@ class YogurtGallery {
                 if (i !== pageNum) {
                     navHTML +=
                         `<a href="?page=${i}">[`
-                      +     this.padNumber(i, totalPageCount.toString().length)
+                      +     this._padNumber(i, totalPageCount.toString().length)
                       + ']</a>'
                     ;
                 }
                 else {
                     navHTML +=
                         '<span>['
-                      +     this.padNumber(i, totalPageCount.toString().length)
+                      +     this._padNumber(i, totalPageCount.toString().length)
                       + ']</span>'
                     ;
                 }
@@ -301,12 +298,8 @@ class YogurtGallery {
                   + ', minmax(0, 1fr))'
                 ;
                 
-                // this._elems.gallery.style.gridTemplateRows =
-                    // 'repeat(auto-fill, minmax(0, 1fr))'
-                // ;
-                
                 this._elems.gallery.getElementsByClassName(
-                    'yogurtgallery-gallery-item'
+                    'yogurtgallery-item'
                 )[0].style.paddingBottom = ((ratio.h / ratio.w) * 100) + '%';
             }
             else if (options.layoutType === 'fluid') {
@@ -318,7 +311,7 @@ class YogurtGallery {
                         'repeat(auto-fill, minmax(' + baseSize + 'rem, 1fr))'
                     ;
                     this._elems.gallery.getElementsByClassName(
-                        'yogurtgallery-gallery-item'
+                        'yogurtgallery-item'
                     )[0].style.paddingBottom =
                         ((ratio.h / ratio.w) * 100) + '%'
                     ;
@@ -346,7 +339,7 @@ class YogurtGallery {
             
             this._elems.galleryItemModel =
                 this._elems.gallery.getElementsByClassName(
-                    'yogurtgallery-gallery-item'
+                    'yogurtgallery-item'
                 )[1]
             ;
             
@@ -367,7 +360,7 @@ class YogurtGallery {
             
             // - Enable image preview popup. -----------------------------------
             let galleryItems = this._elems.gallery.getElementsByClassName(
-                'yogurtgallery-gallery-item'
+                'yogurtgallery-item'
             );
             
             for (const item of galleryItems) {
@@ -421,7 +414,7 @@ class YogurtGallery {
      * @param {string}
      *
     **/
-    grabGET(requestedParam) {
+    _grabGET(requestedParam) {
         let urlParamPairs = window.location.search.substring(1).split('&');
 
         for (let i = 0; i < urlParamPairs.length; i++) {
@@ -443,9 +436,25 @@ class YogurtGallery {
      * @param {number} digits - The desired number of total digits.
      *
     **/
-    padNumber(value, digits) {
+    _padNumber(value, digits) {
         var s = "000000000" + value;
         return s.substr(s.length - digits);
+    }
+    
+    /**
+     *
+     * Fixes slashes in paths.
+     *
+     * @param {string}  path               - The path to be sanitized.
+     * @param {boolean} forceTrailingSlash - Append a trailing slash if absent.
+     *
+    **/
+    _sanitizePath(path, forceTrailingSlash) {
+        path = path.replace(/\\/g, "/");
+        if (forceTrailingSlash)
+            path += (path[path - 1] !== '/') ? '/' : '';
+        
+        return path;
     }
     
     /**
