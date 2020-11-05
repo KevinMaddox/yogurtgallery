@@ -59,7 +59,7 @@
     width: 100%;
 }
 
-.yogurtgallery-gallery-item span span {
+.yogurtgallery-gallery-item > span > span {
     background-position: center center;
     background-size: cover;
     display: block;
@@ -68,7 +68,7 @@
     width: 100%;
 }
 
-.yogurtgallery-gallery-item:hover span span {
+.yogurtgallery-gallery-item:hover > span > span {
     opacity: 0.75;
     transform: scale(1.2);
 }
