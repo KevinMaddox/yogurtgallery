@@ -121,7 +121,7 @@ class YogurtGallery {
           +     '<div><img id="yogurtgallery-popup-image" src=""></div>'
           +     '<div>'
           +         '<span id="yogurtgallery-popup-name"></span>'
-          +         '<a id="yogurtgallery-popup-link" href="#">'
+          +         '<a id="yogurtgallery-popup-link" target="_blank" href="#">'
           +             '[View Full Size]'
           +         '</a>'
           +     '</div>'
