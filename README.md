@@ -7,6 +7,7 @@ YogurtGallery has three main components you'll need to address during installati
 2. A folder with image thumbnails for use in the gallery items.
 3. The actual JavaScript code and CSS style sheet.
 <p>The database is nothing more than a JSON array with relative paths pointing to all your images. A database may look like the following:</p>
+
 ```
 [
     "winter-photos\/mountains.jpg",
