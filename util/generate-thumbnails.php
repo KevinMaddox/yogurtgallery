@@ -114,7 +114,7 @@ $thumbDir = $root . $cfg['thumbnailDirectoryName'];
 // Retrieve list of file paths database.
 $filePaths = json_decode_ex(file_get_contents($cfg['databaseFilePath']));
 
-// Get list of subfolders.
+// Get list of image folders.
 $folders = [];
 foreach ($filePaths as $path) {
     $dir = dirname($path);
@@ -124,8 +124,9 @@ foreach ($filePaths as $path) {
 
 // Create thumbnail directories.
 mkdir_ex($thumbDir);
-foreach ($folders as $f)
-    mkdir_ex($thumbDir . $f);
+foreach ($folders as $f) {
+    mkdir_ex($thumbDir . str_replace('../', '', $f));
+}
 
 // Generate thumbnails.
 $successCount = 0;
@@ -134,7 +135,7 @@ echo 'Generating thumbnails, please wait...' . PHP_EOL;
 foreach ($filePaths as $fp)
 {
     $srcImg = $root . $fp;
-    $dstImg = $thumbDir . $fp;
+    $dstImg = $thumbDir . str_replace('../', '', $fp);
     $dstImg = str_replace('.gif', '.png', $dstImg);
     $dstImg = str_replace('.bmp', '.png', $dstImg);
     $ext = pathinfo($dstImg, PATHINFO_EXTENSION);

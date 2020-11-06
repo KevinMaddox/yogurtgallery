@@ -33,13 +33,13 @@ return [
     'imageDirectoryRootPath' => '../../wc-new/res/artwork/illustration/',
     
     /*
-        This array is a list of sub-directories, relative to
+        This array is a list of directories, relative to
         "imageDirectoryRootPath", where the images you want to be loaded by the
         gallery are stored. All files of the types specified in "filetypes" will
         be catalogued for the specified directories.
         
         No directory traversal/recursion occurs; any sub-directories (within
-        these sub-directories) will be ignored and must instead be added to the
+        these directories) will be ignored and must instead be added to the
         below list. For example:
         
         'illustration/',

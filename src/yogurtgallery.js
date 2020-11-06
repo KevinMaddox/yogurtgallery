@@ -18,27 +18,74 @@ class YogurtGallery {
     _lastGalleryItemClicked;
     _lastWidth;
     
-    constructor(options = {}) {
-        // - Validate configuration options. -----------------------------------
+    /**
+     *
+     * Class constructor.
+     *
+     * @param
+     *
+    **/
+    constructor(
+        rootPath,
+        databaseFileName,
+        thumbnailDirectoryName,
+        options = {}
+    ) {
+        // - Validate arguments. -----------------------------------------------
+        if (typeof rootPath !== 'string') {
+            this._report(
+                'Error',
+                `Invalid value for argument rootPath. `
+              + `Value must be of type string `
+              + `but was of type ${(typeof rootPath)}. `
+            );
+            return;
+        }
+        
+        if (typeof databaseFileName !== 'string') {
+            this._report(
+                'Error',
+                `Invalid value for argument databaseFileName. `
+              + `Value must be of type string `
+              + `but was of type ${(typeof databaseFileName)}. `
+            );
+            return;
+        }
+        
+        if (typeof thumbnailDirectoryName !== 'string') {
+            this._report(
+                'Error',
+                `Invalid value for argument thumbnailDirectoryName. `
+              + `Value must be of type string `
+              + `but was of type ${(typeof thumbnailDirectoryName)}. `
+            );
+            return;
+        }
+        
         if (typeof options !== 'object') {
             this._report(
                 'Warning',
-                'Configuration options must be passed in as an object.'
+                `Invalid value for argument options. `
+              + `Value must be of type object `
+              + `but was of type ${(typeof options)}. `
+              + `Defaulting value to {}.`
             );
             options = {};
         }
         
+        rootPath = this._sanitizePath(rootPath, true);
+        thumbnailDirectoryName = this._sanitizePath(
+            thumbnailDirectoryName, true);
+        
+        // - Validate configuration options. -----------------------------------
         let validOptions = {
-            'rootPath':               ['string',  ''     ],
-            'databaseFilename':       ['string',  ''     ],
-            'thumbnailDirectoryName': ['string',  ''     ],
             'layoutType':             ['string',  'fluid'],
             'itemsPerPage':           ['number',  30     ],
-            'itemsPerRow':            ['number',  6      ],
+            'maxPaginationLinks':     ['number',  7      ],
             'itemSizeRatio':          ['string',  '1:1'  ],
             'itemGap':                ['number',  0      ],
-            'magnification':          ['number',  1      ],
-            'maxPaginationLinks':     ['number',  7      ]
+            'itemsPerRow':            ['number',  6      ],
+            'magnification':          ['number',  1      ]
         };
         
         // Perform validation.
@@ -63,12 +110,6 @@ class YogurtGallery {
             
             // Validate specific options.
             switch (key) {
-                case 'rootPath':
-                    options[key] = this._sanitizePath(options[key], true);
-                    break;
-                case 'thumbnailDirectoryName':
-                    options[key] = this._sanitizePath(options[key], true);
-                    break;
                 case 'layoutType':
                     if (options[key] !== 'fluid' && options[key] !== 'fixed') {
                         this._report(
@@ -161,7 +202,7 @@ class YogurtGallery {
         
         // - Load database and populate page with data. ------------------------
         let request = new XMLHttpRequest();
-        request.open('GET', options.rootPath + options.databaseFilename);
+        request.open('GET', rootPath + databaseFileName);
         request.responseType = 'json';
         request.onload = function() {
             if (request.readyState !== 4 || request.status !== 200) {
@@ -200,12 +241,14 @@ class YogurtGallery {
                 galleryHTML +=
                     '<a'
                   + ' class="yogurtgallery-item"'
-                  + ` href="${options.rootPath}${fileNames[i]}">`
+                  + ` href="${rootPath}${fileNames[i]}">`
                   + '<span class="yogurtgallery-item-thumbnail-container">'
                   + '<span class="yogurtgallery-item-thumbnail" '
                   + 'style="background-image:url(\''
-                  + options.rootPath + options.thumbnailDirectoryName
-                  + fileNames[i].replace(/.gif|.bmp/g, '.png')
+                  + rootPath + thumbnailDirectoryName
+                  + fileNames[i]
+                        .replace(/.gif|.bmp/g, '.png')
+                        .replace(/\.\.\//g, '')
                   + '\')"></span></span></a>'
                 ;
             }
@@ -452,7 +495,7 @@ class YogurtGallery {
     _sanitizePath(path, forceTrailingSlash) {
         path = path.replace(/\\/g, "/");
         if (forceTrailingSlash)
-            path += (path[path - 1] !== '/') ? '/' : '';
+            path += (path[path.length - 1] !== '/') ? '/' : '';
         
         return path;
     }
