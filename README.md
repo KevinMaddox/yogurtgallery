@@ -5,7 +5,7 @@ YogurtGallery is a responsive JavaScript web image gallery. It provides an easy 
 YogurtGallery has three main components you'll need to address during installation:
 1. A flat-file database for the image catalogue.
 2. A folder with image thumbnails for use in the gallery items.
-3. The actual JavaScript code and CSS style sheet.
+3. The actual JavaScript code and CSS style sheet.<br>
 The database is nothing more than a JSON array with relative paths pointing to all your images. A database may look like the following:
 ```
 [
