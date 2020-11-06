@@ -69,13 +69,13 @@ YogurtGallery(
 ### Configuration Options
 | Option | Type | Def. Value | Description |
 | --- | --- | --- | --- |
-| layoutType | string | fluid | Can be either "fluid" or "fixed". Fluid layouts will rearrange gallery items based on the size of the container, whereas fixed layouts will maintain a static number of items per row and will grow/shrink with the size of the container. |
+| layoutType | string | fluid | Can be either `fluid" or `fixed`. Fluid layouts will rearrange gallery items based on the size of the container, whereas fixed layouts will maintain a static number of items per row and will grow/shrink with the size of the container. |
 | itemsPerPage | number | 30 | The maximum number of items per page. |
 | maxPaginationLinks | number | 7 | How many page links should be displayed at one time in the page navigation bar. Prevents excessively-long navigation bars in populated galleries. |
 | itemSizeRatio | string | 1:1 | The width-to-height ratio of each gallery item. A ratio of `1:1` is a perfect square, `0.5:1` is tall, and `1:0.5` is long. Values over `1` (e.g. `4:3` or `16:9`) are accepted. |
 | itemGap | number | 0 | The spacing between items. Scales with item size. Not measured in any specific units, so play around with it. |
 | itemsPerRow | number | 6 | The static number of items placed on each row. Only applies to fixed layouts. |
-| magnification | number | 1 | A means by which to increase or decrease the baseline size of images. Only applies to fluid layouts. |
+| magnification | number | 1 | A means by which to increase or decrease the baseline size of images. Only applies to fluid layouts. Based on an arbitrary baseline of 8em. |
 ### Member Functions
 #### closePopup()
 Closes the full-size image popup window. Useful if you need to do this manually.
