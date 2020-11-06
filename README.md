@@ -1,6 +1,7 @@
 # YogurtGallery
-YogurtGallery is a responsive JavaScript web gallery.
-## Overview
+YogurtGallery is a responsive JavaScript web image gallery. It provides an easy setup for creating both fixed and fluid galleries. Supported filetypes are JPG/JPEG, PNG, GIF, BMP, and WEBP.
+## Installation
+### Overview
 YogurtGallery has three main components you'll need to address during installation:
 1. A flat-file database for the image catalogue.
 2. A folder with image thumbnails for use in the gallery items.
@@ -16,7 +17,6 @@ The database is nothing more than a JSON array with relative paths pointing to a
 ]
 ```
 As you can see, you may have paths both above and below the location of the database file. Two PHP scripts are included in this repository: one to generate the database, and another to generate the thumbnails from that database.
-## Installation
 ### Step 1: Generate the Database
 Use the PHP script `util/generate-db.php` to generate the database. Before running it, you'll want to alter the file `config-generate-db.php` to match your needs. For more information, please see section `Specification / Database Generator` further below.<br>When ready, simply run the following command:
 ```
