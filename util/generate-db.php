@@ -226,7 +226,7 @@ file_put_contents(
     json_encode($filePaths, JSON_PRETTY_PRINT)
 );
 
-echo 'Database generation complete.';
+echo 'Database generated: ' . $root . $cfg['databaseOutputFileName'];
 
 
 // - Functions -----------------------------------------------------------------
