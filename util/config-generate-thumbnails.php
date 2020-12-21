@@ -4,8 +4,8 @@
  *
  * YogurtGallery Thumbnail Generator - Configuration File
  *
- * Wally Chantek, 2020
- * https://github.com/wallychantek/yogurtgallery
+ * Kevin Maddox, 2020
+ * https://github.com/kevinmaddox/yogurtgallery
  *
 **/
 
@@ -14,7 +14,7 @@ return [
         This string is the path to the database which you should have previously
         generated via the YogurtGallery Database Generator script.
     */
-    'databaseFilePath' => '../../wc-new/res/artwork/illustration/db.json',
+    'databaseFilePath' => '../../my-website/res/artwork/illustration/db.json',
     
     /*
         This string is the name of the folder where you want the thumbnails to

@@ -4,14 +4,14 @@
  *
  * YogurtGallery Image Thumbnail Generator
  *
- * Wally Chantek, 2020
- * https://github.com/wallychantek/yogurtgallery
+ * Kevin Maddox, 2020
+ * https://github.com/kevinmaddox/yogurtgallery
  *
 **/
 
 // - Initialization. -----------------------------------------------------------
 echo 'Yogurt Gallery - Image Thumbnail Generator' . PHP_EOL;
-echo 'https://github.com/WallyChantek/yogurtgallery' . PHP_EOL . PHP_EOL;
+echo 'https://github.com/kevinmaddox/yogurtgallery' . PHP_EOL . PHP_EOL;
 
 // - Validate configuration options. -------------------------------------------
 $cfg = require_once('config-generate-thumbnails.php');

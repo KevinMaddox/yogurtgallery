@@ -4,8 +4,8 @@
  *
  * YogurtGallery Database Generator - Configuration File
  *
- * Wally Chantek, 2020
- * https://github.com/wallychantek/yogurtgallery
+ * Kevin Maddox, 2020
+ * https://github.com/kevinmaddox/yogurtgallery
  *
 **/
 
@@ -30,7 +30,7 @@ return [
         or manually create the database by hand with the correct relative paths.
         This is outside the scope of YogurtGallery, which aims for simplicity.
     */
-    'imageDirectoryRootPath' => '../../wc-new/res/artwork/illustration/',
+    'imageDirectoryRootPath' => '../../my-website/res/artwork/illustration/',
     
     /*
         This array is a list of directories, relative to

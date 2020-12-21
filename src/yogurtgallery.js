@@ -8,8 +8,8 @@
  * YogurtGallery
  * Image gallery with pop-up previews and pagination
  *
- * Wally Chantek, 2020
- * https://github.com/wallychantek/yogurtgallery
+ * Kevin Maddox, 2020
+ * https://github.com/kevinmaddox/yogurtgallery
  *
 **/
 
