@@ -125,7 +125,21 @@ foreach ($filePaths as $path) {
 // Create thumbnail directories.
 mkdir_ex($thumbDir);
 foreach ($folders as $f) {
-    mkdir_ex($thumbDir . str_replace('../', '', $f));
+    // Original code
+    // mkdir_ex($thumbDir . str_replace('../', '', $f));
+    
+    // Untested code
+    // TODO: Test me
+    $fn = str_replace('../', '', $f);
+    $ff = $fn;
+    
+    $i = 1;
+    while (is_dir($ff)) {
+        $ff = $fn . '_' . $i;
+        $i++;
+    }
+    
+    mkdir_ex($thumbDir . $ff);
 }
 
 // Generate thumbnails.

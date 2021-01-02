@@ -102,5 +102,3 @@ Edit the configuration options via the file `config-generate-db.php`. When ready
 | pngCompressionLevel | integer | 6 | The quality level of PNG thumbnails. |
 ## Notes
 * Because the paths in the database file are all relative, any changes in directory structure of file placement will require you to modify the file or regenerate the file via the `generate-db.php` script.
-
-## TODO Note to self: handle directory conflicts for thumbnails folder
