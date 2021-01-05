@@ -37,18 +37,24 @@ Wherever you want on your page (can also be in the head), include the script:
 ```
 <script type="text/javascript" src="../yogurtgallery/src/yogurtgallery.js"></script>
 ```
+In the location where you want the gallery placed on the page, add:
+```
+<div id="yogurtgallery"></div>
+```
 At the bottom of your page, after all your content loads, create a new script tag and create a new YogurtGallery instance. There are a variety of parameters which need to be passed and which can be used to configure the behavior and layout of the gallery. For more information, please see section `Specification / YogurtGallery` further below. A sample instance declaration may look like the following:
 ```
-let gallery = new YogurtGallery({
-    'rootPath': 'res/artwork/illustration/',
-    'databaseFilename': 'db.json',
-    'thumbnailDirectoryName': 'thumb',
-    'itemsPerPage': 24,
-    'layoutType': 'fluid',
-    'itemSizeRatio': '1:1.35',
-    'itemGap': 0.7,
-    'itemsPerRow': 6
-});
+let gallery = new YogurtGallery(
+    'res/artwork/illustration/',
+    'db.json',
+    'thumb',
+    {
+        'itemsPerPage': 24,
+        'layoutType': 'fixed',
+        'itemSizeRatio': '1:1.35',
+        'itemGap': 0.7,
+        'itemsPerRow': 6
+    }
+);
 ```
 ## Specification / YogurtGallery
 ### Class Declaration
