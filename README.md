@@ -83,7 +83,8 @@ YogurtGallery(
 | itemGap | float | 0 | The spacing between items. Scales with item size. Not measured in any specific units, so play around with it. |
 | itemsPerRow | integer | 6 | The static number of items placed on each row. Only applies to fixed layouts. |
 | magnification | float | 1 | A means by which to increase or decrease the baseline size of images. Only applies to fluid layouts. Based on an arbitrary baseline of 8em. |
-### Member Functions
+| enableKeyboardNavigation | boolean | true | Toggles the ability to traverse the gallery via keyboard inputs (left/right to change image/page, escape to currently-viewed image. |
+### Public Member Functions
 #### closePopup()
 Closes the full-size image popup window. Useful if you need to do this manually.
 ## Specification / Database Generator
