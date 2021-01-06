@@ -1,5 +1,7 @@
 # YogurtGallery
 YogurtGallery is a responsive JavaScript web image gallery. It provides an easy setup for creating both fixed and fluid galleries. Supported filetypes are JPG/JPEG, PNG, GIF, BMP, and WEBP.
+<p align="center"><img src="https://raw.githubusercontent.com/kevinmaddox/yogurtgallery/main/images/img01.png" alt="YogurtGallery Preview"/></p>
+
 ## Demo
 [Fixed Layout](https://kevinmaddox.github.io/demo/yogurtgallery/yogurtgallery-fixed.html)<br>
 [Fluid Layout](https://kevinmaddox.github.io/demo/yogurtgallery/yogurtgallery-fluid.html)
